@@ -151,7 +151,11 @@ $(document).ready(function () {
         socket.send(JSON.stringify(msg));
     });
                   
-    // Version Check
+    // Version Check (iOS Only)
+    var isCordovaApp = document.URL.indexOf('http://') === -1
+        && document.URL.indexOf('https://') === -1;
+                  
+    if (isCordovaApp == true){
                   
     $('#Version').text('Cannot check for update (' + version +')')
     $('#Version').addClass('label label-danger');
@@ -177,5 +181,6 @@ $(document).ready(function () {
           
     });
 
+    }
 
 });
