@@ -1,4 +1,5 @@
 var socket;
+var version = 'v0.2r2';
 
 function setLEDstatus(ledElement, status) {
     if (status) {
@@ -23,7 +24,7 @@ function setConnectedClass(cssClass) {
 }
 
 function connect() {
-    socket = new WebSocket('ws://' + window.location.hostname + '/control');
+    socket = new WebSocket('ws://192.168.10.1/control');
 
     socket.onopen = function (msg) {
         setConnectedClass('label-success');
@@ -42,6 +43,7 @@ function connect() {
         console.log('Received status update.')
 
         var status = JSON.parse(msg.data)
+        version = status.Version;
 
         // Update Status
         $('#Version').text(status.Version);
@@ -148,5 +150,32 @@ $(document).ready(function () {
         };
         socket.send(JSON.stringify(msg));
     });
+                  
+    // Version Check
+                  
+    $('#Version').text('Cannot check for update (' + version +')')
+    $('#Version').addClass('label label-danger');
+                  
+    $.get("http://54.153.29.215/version", function(data, status){
+        var gitVersion = data.replace(/\s/g, "");
+
+        if (version == gitVersion){
+          $('#Version').text('Up to date (' + version +')')
+          $('#Version').removeClass('label label-danger');
+          $('#Version').addClass('label label-success');
+        }
+        else {
+          $('#Version').text('Update available (' + gitVersion +')')
+          $('#Version').removeClass('label label-danger');
+          $('#Version').addClass('label label-warning');
+        }
+        
+        if (gitVersion == ''){
+          $('#Version').text('Cannot check for update (' + version +')')
+          $('#Version').addClass('label label-danger');
+        }
+          
+    });
+
 
 });
